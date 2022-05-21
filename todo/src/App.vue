@@ -1,5 +1,7 @@
 <template>
-  <TodoPage />
+  <Suspense>
+    <TodoPage />
+  </Suspense>
 </template>
 
 <script>

@@ -1,12 +1,17 @@
 <script setup>
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
+import TodoItem from './TodoItem.vue';
 
 const typedTask = ref('');
-const taskList = ref([]);
+var taskList = await fetch('https://jsonplaceholder.typicode.com/todos')
+    .then((response) => response.json());
+var lastId = Math.max.apply(Math, taskList.map(function (task) { return task.id }));
+const taskSet = reactive(taskList);
+
 function addTask() {
     if (typedTask.value === '')
         return;
-    taskList.value.push(typedTask.value);
+    taskSet.unshift({ userId: 1, id: ++lastId, title: typedTask.value, completed: false });
     typedTask.value = '';
 }
 </script>
@@ -19,9 +24,9 @@ function addTask() {
                 @keyup.enter="addTask()">
             <button class="btn btn-primary ms-3" @click="addTask()">+</button>
         </div>
-        <ul class="list-group list-group-flush" v-if="taskList.length > 0">
-            <li v-for="taskItem of taskList" :key="taskItem" class="list-group-item fs-4">
-                {{ taskItem }}
+        <ul class="list-group list-group-flush" v-if="taskSet.length > 0">
+            <li v-for="taskItem in taskSet" :key="taskItem.id" class="list-group-item fs-4">
+                <TodoItem :taskItem="taskItem" />
             </li>
         </ul>
     </div>
