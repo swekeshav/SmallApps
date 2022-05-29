@@ -69,7 +69,7 @@ const highCount = computed(() => {
         && a.priority === "high").length;
 })
 
-const emitCompletedEvent = function(taskItem, completionState){
+const emitCompletedEvent = function (taskItem, completionState) {
     taskSet.find(a => a.id === taskItem.value.id).completed = completionState.value;
 }
 
@@ -111,11 +111,11 @@ const emitCompletedEvent = function(taskItem, completionState){
             <input type="radio" class="btn-check" value="high" name="btnPriority" id="btnHigh" v-model="priorityState">
             <label class="btn btn-outline-danger" for="btnHigh">High ({{ highCount }})</label>
         </div>
-        <ul class="list-group list-group-flush" v-if="filteredTodos.length > 0">
+        <TransitionGroup class="list-group list-group-flush" v-if="filteredTodos.length > 0" name="list" tag="ul">
             <li v-for="taskItem in filteredTodos" :key="taskItem.id" class="list-group-item fs-4">
-                <TodoItem :taskItem="taskItem" @emitCompleted="emitCompletedEvent"/>
+                <TodoItem :taskItem="taskItem" @emitCompleted="emitCompletedEvent" />
             </li>
-        </ul>
+        </TransitionGroup>
     </div>
 </template>
 
@@ -123,4 +123,21 @@ const emitCompletedEvent = function(taskItem, completionState){
 li {
     text-align: start;
 }
+.list-move, /* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+/* .list-leave-active {
+  position: absolute;
+} */
 </style>
