@@ -1,127 +1,250 @@
 <script setup>
-import { reactive, ref, computed } from 'vue';
-import TodoItem from './TodoItem.vue';
+import { reactive, ref, computed } from "vue";
+import TodoItem from "./TodoItem.vue";
 
-const typedTask = ref('');
-var taskList = await fetch('https://jsonplaceholder.typicode.com/todos')
-    .then((response) => response.json());
+const typedTask = ref("");
+var taskList = await fetch("https://jsonplaceholder.typicode.com/todos").then(
+  (response) => response.json()
+);
 
 taskList.forEach((task, idx) => {
-    if (idx % 3 === 0) {
-        task.priority = "low";
-    } else if (idx % 3 === 1) {
-        task.priority = "medium";
-    } else {
-        task.priority = "high";
-    }
-})
+  if (idx % 3 === 0) {
+    task.priority = "low";
+  } else if (idx % 3 === 1) {
+    task.priority = "medium";
+  } else {
+    task.priority = "high";
+  }
+});
 
-var lastId = Math.max.apply(Math, taskList.map(function (task) { return task.id }));
+var lastId = Math.max.apply(
+  Math,
+  taskList.map(function (task) {
+    return task.id;
+  })
+);
 const taskSet = reactive(taskList);
 
-const displayState = ref('total');
-const priorityState = ref('all');
+const displayState = ref("total");
+const priorityState = ref("all");
 
 function addTask() {
-    if (typedTask.value === '')
-        return;
-    taskSet.unshift({ userId: 1, id: ++lastId, title: typedTask.value, completed: false });
-    typedTask.value = '';
+  if (typedTask.value === "") return;
+  taskSet.unshift({
+    userId: 1,
+    id: ++lastId,
+    title: typedTask.value,
+    completed: false,
+  });
+  typedTask.value = "";
 }
 
 const filteredTodos = computed(() => {
-    if (displayState.value === "active") {
-        return taskSet.filter(a => a.completed == false && (priorityState.value === "all" || a.priority === priorityState.value))
-    } else if (displayState.value === "completed") {
-        return taskSet.filter(a => a.completed == true && (priorityState.value === "all" || a.priority === priorityState.value))
-    }
-    return taskSet.filter(a => (priorityState.value === "all" || a.priority === priorityState.value));
-})
+  if (displayState.value === "active") {
+    return taskSet.filter(
+      (a) =>
+        a.completed == false &&
+        (priorityState.value === "all" || a.priority === priorityState.value)
+    );
+  } else if (displayState.value === "completed") {
+    return taskSet.filter(
+      (a) =>
+        a.completed == true &&
+        (priorityState.value === "all" || a.priority === priorityState.value)
+    );
+  }
+  return taskSet.filter(
+    (a) => priorityState.value === "all" || a.priority === priorityState.value
+  );
+});
 
-const totalCount = computed(() => {
-    return taskSet.length;
-})
+// const totalCount = computed(() => {
+//   return taskSet.length;
+// });
 
-const activeCount = computed(() => {
-    return taskSet.filter(a => a.completed == false).length;
-})
+// const activeCount = computed(() => {
+//   return taskSet.filter((a) => a.completed == false).length;
+// });
 
-const completedCount = computed(() => {
-    return taskSet.filter(a => a.completed == true).length;
-})
+// const completedCount = computed(() => {
+//   return taskSet.filter((a) => a.completed == true).length;
+// });
 
-const allCount = computed(() => {
-    return taskSet.filter(a => (displayState.value === "total" || a.completed === (displayState.value === "active" ? false : true))).length;
-})
+// const allCount = computed(() => {
+//   return taskSet.filter(
+//     (a) =>
+//       displayState.value === "total" ||
+//       a.completed === (displayState.value === "active" ? false : true)
+//   ).length;
+// });
 
-const lowCount = computed(() => {
-    return taskSet.filter(a => (displayState.value === "total" || a.completed === (displayState.value === "active" ? false : true))
-        && a.priority === "low").length;
-})
+// const lowCount = computed(() => {
+//   return taskSet.filter(
+//     (a) =>
+//       (displayState.value === "total" ||
+//         a.completed === (displayState.value === "active" ? false : true)) &&
+//       a.priority === "low"
+//   ).length;
+// });
 
-const mediumCount = computed(() => {
-    return taskSet.filter(a => (displayState.value === "total" || a.completed === (displayState.value === "active" ? false : true))
-        && a.priority === "medium").length;
-})
+// const mediumCount = computed(() => {
+//   return taskSet.filter(
+//     (a) =>
+//       (displayState.value === "total" ||
+//         a.completed === (displayState.value === "active" ? false : true)) &&
+//       a.priority === "medium"
+//   ).length;
+// });
 
-const highCount = computed(() => {
-    return taskSet.filter(a => (displayState.value === "total" || a.completed === (displayState.value === "active" ? false : true))
-        && a.priority === "high").length;
-})
+// const highCount = computed(() => {
+//   return taskSet.filter(
+//     (a) =>
+//       (displayState.value === "total" ||
+//         a.completed === (displayState.value === "active" ? false : true)) &&
+//       a.priority === "high"
+//   ).length;
+// });
 
 const emitCompletedEvent = function (taskItem, completionState) {
-    taskSet.find(a => a.id === taskItem.value.id).completed = completionState.value;
-}
-
+  taskSet.find((a) => a.id === taskItem.value.id).completed =
+    completionState.value;
+};
 </script>
 
 <template>
-    <h1 class="mb-5">Happy Todos!</h1>
-    <div class="container">
-        <div class="input-group input-group-lg mb-3">
-            <input type="text" class="form-control" placeholder="Enter a Task" v-model="typedTask"
-                @keyup.enter="addTask()">
-            <button class="btn btn-primary ms-3" @click="addTask()">+</button>
+  <h1 class="mb-5">Happy Todos!</h1>
+  <div class="row">
+    <div class="col-lg-2 d-lg-block d-none">
+      <h3 class="text-start mx-5 my-1">Filters</h3>
+      <div class="card m-3 mb-4">
+        <h4 class="text-start mx-4 mt-4">Status</h4>
+        <div class="mx-4 my-2" role="group">
+          <div class="form-check text-start my-1">
+            <input
+              class="form-check-input fs-5"
+              type="radio"
+              name="btnDisplay"
+              value="all"
+              id="btnAll"
+              v-model="displayState"
+              checked
+            />
+            <label class="form-check-label fs-5" for="btnAll"> All </label>
+          </div>
+          <div class="form-check text-start my-1">
+            <input
+              class="form-check-input fs-5"
+              type="radio"
+              name="btnDisplay"
+              value="active"
+              id="btnActive"
+              v-model="displayState"
+            />
+            <label class="form-check-label fs-5" for="btnActive">
+              Active
+            </label>
+          </div>
+          <div class="form-check text-start my-1">
+            <input
+              class="form-check-input fs-5"
+              type="radio"
+              name="btnDisplay"
+              value="completed"
+              id="btnCompleted"
+              v-model="displayState"
+            />
+            <label class="form-check-label fs-5" for="btnCompleted">
+              Completed
+            </label>
+          </div>
         </div>
-        <div class="btn-group btn-group-lg d-flex my-4" role="group">
-            <input type="radio" class="btn-check" value="total" name="btnDisplay" id="btnTotal" v-model="displayState"
-                checked>
-            <label class="btn btn-outline-primary" for="btnTotal">Total ({{ totalCount }})</label>
-
-            <input type="radio" class="btn-check" value="active" name="btnDisplay" id="btnActive"
-                v-model="displayState">
-            <label class="btn btn-outline-primary" for="btnActive">Active ({{ activeCount }})</label>
-
-            <input type="radio" class="btn-check" value="completed" name="btnDisplay" id="btnCompleted"
-                v-model="displayState">
-            <label class="btn btn-outline-primary" for="btnCompleted">Completed ({{ completedCount }})</label>
+      </div>
+      <div class="card m-3">
+        <h4 class="text-start mx-4 mt-4">Priority</h4>
+        <div class="mx-4 my-2" role="group">
+          <div class="form-check text-start my-1">
+            <input
+              class="form-check-input fs-5"
+              type="radio"
+              name="btnPriority"
+              value="all"
+              id="btnAll"
+              v-model="priorityState"
+              checked
+            />
+            <label class="form-check-label fs-5" for="btnAll"> All </label>
+          </div>
+          <div class="form-check text-start my-1">
+            <input
+              class="form-check-input fs-5"
+              type="radio"
+              name="btnPriority"
+              value="low"
+              id="btnLow"
+              v-model="priorityState"
+            />
+            <label class="form-check-label fs-5" for="btnLow"> Low </label>
+          </div>
+          <div class="form-check text-start my-1">
+            <input
+              class="form-check-input fs-5"
+              type="radio"
+              name="btnPriority"
+              value="medium"
+              id="btnMedium"
+              v-model="priorityState"
+            />
+            <label class="form-check-label fs-5" for="btnMedium">
+              Medium
+            </label>
+          </div>
+          <div class="form-check text-start my-1">
+            <input
+              class="form-check-input fs-5"
+              type="radio"
+              name="btnPriority"
+              value="high"
+              id="btnHigh"
+              v-model="priorityState"
+            />
+            <label class="form-check-label fs-5" for="btnHigh"> High </label>
+          </div>
         </div>
-        <div class="btn-group btn-group-lg d-flex my-4" role="group">
-            <input type="radio" class="btn-check" value="all" name="btnPriority" id="btnAll" v-model="priorityState"
-                checked>
-            <label class="btn btn-outline-info" for="btnAll">All ({{ allCount }})</label>
-
-            <input type="radio" class="btn-check" value="low" name="btnPriority" id="btnLow" v-model="priorityState">
-            <label class="btn btn-outline-secondary" for="btnLow">Low ({{ lowCount }})</label>
-
-            <input type="radio" class="btn-check" value="medium" name="btnPriority" id="btnMedium"
-                v-model="priorityState">
-            <label class="btn btn-outline-success" for="btnMedium">Medium ({{ mediumCount }})</label>
-
-            <input type="radio" class="btn-check" value="high" name="btnPriority" id="btnHigh" v-model="priorityState">
-            <label class="btn btn-outline-danger" for="btnHigh">High ({{ highCount }})</label>
-        </div>
-        <TransitionGroup class="list-group list-group-flush" v-if="filteredTodos.length > 0" name="list" tag="ul">
-            <li v-for="taskItem in filteredTodos" :key="taskItem.id" class="list-group-item fs-4">
-                <TodoItem :taskItem="taskItem" @emitCompleted="emitCompletedEvent" />
-            </li>
-        </TransitionGroup>
+      </div>
     </div>
+    <div class="offset-lg-1 col-lg-6">
+      <div class="input-group input-group-lg mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter a Task"
+          v-model="typedTask"
+          id="txtNewTask"
+          @keyup.enter="addTask()"
+        />
+        <button class="btn btn-primary ms-3" @click="addTask()">+</button>
+      </div>
+      <TransitionGroup
+        class="list-group list-group-flush"
+        v-if="filteredTodos.length > 0"
+        name="list"
+        tag="ul"
+      >
+        <li
+          v-for="taskItem in filteredTodos"
+          :key="taskItem.id"
+          class="list-group-item fs-4"
+        >
+          <TodoItem :taskItem="taskItem" @emitCompleted="emitCompletedEvent" />
+        </li>
+      </TransitionGroup>
+    </div>
+  </div>
 </template>
 
 <style scoped>
 li {
-    text-align: start;
+  text-align: start;
 }
 .list-move, /* apply transition to moving elements */
 .list-enter-active,
