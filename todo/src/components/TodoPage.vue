@@ -1,112 +1,47 @@
 <script setup>
-import { reactive, ref, computed } from "vue";
-import TodoItem from "./TodoItem.vue";
+import { ref, computed, onMounted } from "vue";
+import TodoItem from './TodoItem.vue';
 
 const typedTask = ref("");
-var taskList = await fetch("https://jsonplaceholder.typicode.com/todos").then(
-  (response) => response.json()
-);
 
-taskList.forEach((task, idx) => {
-  if (idx % 3 === 0) {
-    task.priority = "low";
-  } else if (idx % 3 === 1) {
-    task.priority = "medium";
-  } else {
-    task.priority = "high";
-  }
+onMounted (async () => {
+  taskSet.value = await fetch("https://dummyjson.com/todos?limit=10")
+    .then((response) => response.json())
+    .then((data) => data.todos);
 });
 
-var lastId = Math.max.apply(
-  Math,
-  taskList.map(function (task) {
-    return task.id;
-  })
-);
-const taskSet = reactive(taskList);
+var taskSet = ref([]);
 
 const displayState = ref("total");
-const priorityState = ref("all");
 
 function addTask() {
   if (typedTask.value === "") return;
-  taskSet.unshift({
-    userId: 1,
-    id: ++lastId,
-    title: typedTask.value,
+  taskSet.value.unshift({
+    id:23,
+    todo: typedTask.value,
     completed: false,
+    userId: 1,
   });
   typedTask.value = "";
 }
 
 const filteredTodos = computed(() => {
   if (displayState.value === "active") {
-    return taskSet.filter(
+    return taskSet.value.filter(
       (a) =>
-        a.completed == false &&
-        (priorityState.value === "all" || a.priority === priorityState.value)
+        a.completed == false
     );
   } else if (displayState.value === "completed") {
-    return taskSet.filter(
+    return taskSet.value.filter(
       (a) =>
-        a.completed == true &&
-        (priorityState.value === "all" || a.priority === priorityState.value)
+        a.completed == true 
     );
   }
-  return taskSet.filter(
-    (a) => priorityState.value === "all" || a.priority === priorityState.value
-  );
+  return taskSet.value;
 });
 
-// const totalCount = computed(() => {
-//   return taskSet.length;
-// });
-
-// const activeCount = computed(() => {
-//   return taskSet.filter((a) => a.completed == false).length;
-// });
-
-// const completedCount = computed(() => {
-//   return taskSet.filter((a) => a.completed == true).length;
-// });
-
-// const allCount = computed(() => {
-//   return taskSet.filter(
-//     (a) =>
-//       displayState.value === "total" ||
-//       a.completed === (displayState.value === "active" ? false : true)
-//   ).length;
-// });
-
-// const lowCount = computed(() => {
-//   return taskSet.filter(
-//     (a) =>
-//       (displayState.value === "total" ||
-//         a.completed === (displayState.value === "active" ? false : true)) &&
-//       a.priority === "low"
-//   ).length;
-// });
-
-// const mediumCount = computed(() => {
-//   return taskSet.filter(
-//     (a) =>
-//       (displayState.value === "total" ||
-//         a.completed === (displayState.value === "active" ? false : true)) &&
-//       a.priority === "medium"
-//   ).length;
-// });
-
-// const highCount = computed(() => {
-//   return taskSet.filter(
-//     (a) =>
-//       (displayState.value === "total" ||
-//         a.completed === (displayState.value === "active" ? false : true)) &&
-//       a.priority === "high"
-//   ).length;
-// });
-
 const emitCompletedEvent = function (taskItem, completionState) {
-  taskSet.find((a) => a.id === taskItem.value.id).completed =
+  taskSet.value.find((a) => a.id === taskItem.value.id).completed =
     completionState.value;
 };
 </script>
@@ -159,58 +94,6 @@ const emitCompletedEvent = function (taskItem, completionState) {
           </div>
         </div>
       </div>
-      <div class="card m-3">
-        <h4 class="text-start mx-4 mt-4">Priority</h4>
-        <div class="mx-4 my-2" role="group">
-          <div class="form-check text-start my-1">
-            <input
-              class="form-check-input fs-5"
-              type="radio"
-              name="btnPriority"
-              value="all"
-              id="btnAll"
-              v-model="priorityState"
-              checked
-            />
-            <label class="form-check-label fs-5" for="btnAll"> All </label>
-          </div>
-          <div class="form-check text-start my-1">
-            <input
-              class="form-check-input fs-5"
-              type="radio"
-              name="btnPriority"
-              value="low"
-              id="btnLow"
-              v-model="priorityState"
-            />
-            <label class="form-check-label fs-5" for="btnLow"> Low </label>
-          </div>
-          <div class="form-check text-start my-1">
-            <input
-              class="form-check-input fs-5"
-              type="radio"
-              name="btnPriority"
-              value="medium"
-              id="btnMedium"
-              v-model="priorityState"
-            />
-            <label class="form-check-label fs-5" for="btnMedium">
-              Medium
-            </label>
-          </div>
-          <div class="form-check text-start my-1">
-            <input
-              class="form-check-input fs-5"
-              type="radio"
-              name="btnPriority"
-              value="high"
-              id="btnHigh"
-              v-model="priorityState"
-            />
-            <label class="form-check-label fs-5" for="btnHigh"> High </label>
-          </div>
-        </div>
-      </div>
     </div>
     <div class="offset-lg-1 col-lg-6">
       <div class="input-group input-group-lg mb-3">
@@ -235,7 +118,7 @@ const emitCompletedEvent = function (taskItem, completionState) {
           :key="taskItem.id"
           class="list-group-item fs-4"
         >
-          <TodoItem :taskItem="taskItem" @emitCompleted="emitCompletedEvent" />
+          <TodoItem :taskItem="taskItem" v-on:emitCompleted="emitCompletedEvent"/>
         </li>
       </TransitionGroup>
     </div>
