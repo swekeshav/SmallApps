@@ -5,7 +5,7 @@ const props = defineProps({
     taskItem: Object
 })
 
-const emits = defineEmits(['emitCompleted'])
+const emits = defineEmits(['emitCompleted', 'emitDeleted'])
 
 const item = ref(props.taskItem);
 const completed = ref(props.taskItem.completed);
@@ -13,6 +13,7 @@ const completed = ref(props.taskItem.completed);
 watch(completed, () => {
     emits('emitCompleted', item, completed)
 })
+
 </script>
 
 <template>
@@ -22,6 +23,7 @@ watch(completed, () => {
             <label class="form-check-label ms-3" for="taskItem.id">
                 {{ props.taskItem.todo }}
             </label>
+            <button class="ms-auto btn btn-danger" @click="$emit('emitDeleted', taskItem.id)">Delete</button>
         </div>
     </Transition>
 </template>
