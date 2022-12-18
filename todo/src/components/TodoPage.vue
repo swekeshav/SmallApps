@@ -63,7 +63,7 @@ const handleDeletedEvent = (id) => {
 </script>
 
 <template>
-  <h1 class="mb-5">Happy todos.value!</h1>
+  <h1 class="mb-5">Happy Todos!</h1>
   <div class="row">
     <div class="col-lg-2 d-lg-block d-none">
       <h3 class="text-start mx-5 my-1">Filters</h3>
