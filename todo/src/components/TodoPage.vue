@@ -1,22 +1,26 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch} from "vue";
 import TodoItem from './TodoItem.vue';
 
 const typedTask = ref("");
+const todos = ref([]);
 
-onMounted (async () => {
-  taskSet.value = await fetch("https://dummyjson.com/todos?limit=10")
-    .then((response) => response.json())
-    .then((data) => data.todos);
-});
+// onMounted (async () => {
+//   taskSet.value = await fetch("https://dummyjson.com/todos?limit=10")
+//     .then((response) => response.json())
+//     .then((data) => data.todos);
+// });
 
-var taskSet = ref([]);
+onMounted(() =>{
+  todos.value = JSON.parse(localStorage.getItem('todos')) || []
+})
 
-const displayState = ref("total");
+const displayState = ref('total');
 
-function addTask() {
+const addTask = () => {
   if (typedTask.value === "") return;
-  taskSet.value.unshift({
+  console.log(typedTask.value); 
+  todos.value.unshift({
     id:23,
     todo: typedTask.value,
     completed: false,
@@ -25,23 +29,27 @@ function addTask() {
   typedTask.value = "";
 }
 
+watch(todos, newVal => {
+  localStorage.setItem('todos',JSON.stringify(newVal));
+}, {deep: true})
+
 const filteredTodos = computed(() => {
   if (displayState.value === "active") {
-    return taskSet.value.filter(
+    return todos.value.filter(
       (a) =>
         a.completed == false
     );
   } else if (displayState.value === "completed") {
-    return taskSet.value.filter(
+    return todos.value.filter(
       (a) =>
         a.completed == true 
     );
   }
-  return taskSet.value;
+  return todos.value;
 });
 
 const emitCompletedEvent = function (taskItem, completionState) {
-  taskSet.value.find((a) => a.id === taskItem.value.id).completed =
+  todos.value.find((a) => a.id === taskItem.value.id).completed =
     completionState.value;
 };
 </script>
@@ -105,7 +113,7 @@ const emitCompletedEvent = function (taskItem, completionState) {
           id="txtNewTask"
           @keyup.enter="addTask()"
         />
-        <button class="btn btn-primary ms-3" @click="addTask()">+</button>
+        <button class="btn btn-primary ms-3" @click="addTask()">Add Todo</button>
       </div>
       <TransitionGroup
         class="list-group list-group-flush"
