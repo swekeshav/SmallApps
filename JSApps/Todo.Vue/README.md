@@ -22,3 +22,8 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Development Choices
+
+- [Split Panes](../../docs/split-panes.md)
+- [Mock Data](../../docs/mock-data.md)
