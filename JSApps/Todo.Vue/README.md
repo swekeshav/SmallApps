@@ -1,4 +1,4 @@
-# todo
+# todo.vue
 
 ## Project setup
 ```
@@ -25,5 +25,5 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Development Choices
 
-- [Split Panes](./docs/split-panes.md)
-- [Mock Data](./docs/mock-data.md)
+- [Split Panes](../../docs/split-panes.md)
+- [Mock Data](../../docs/mock-data.md)
