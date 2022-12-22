@@ -1,22 +1,14 @@
-<template>
-  <!-- <Suspense>
-    <TodoPage />
-  </Suspense> -->
-  <SplitPanes />
-</template>
-
-<script>
-// import TodoPage from "./components/TodoPage.vue";
-import SplitPanes from "./components/SplitPanes.vue";
-
-export default {
-  name: "App",
-  components: {
-    // TodoPage,
-    SplitPanes,
-  },
-};
+<script setup lang="ts">
+import TodoPage from "./components/TodoPage.vue";
+// import SplitPanes from "./components/SplitPanes.vue";
 </script>
+
+<template>
+  <Suspense>
+    <TodoPage />
+  </Suspense>
+  <!-- <SplitPanes /> -->
+</template>
 
 <style>
 #app {
