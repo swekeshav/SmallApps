@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { defineProps, defineEmits, ref, watch } from "vue";
 
 const emits = defineEmits(["emitCompleted", "emitDeleted"]);
@@ -8,8 +8,7 @@ const props = defineProps({
 });
 
 const item = ref(props.taskItem);
-const completed = ref(props.taskItem.completed);
-
+const completed = ref(props.taskItem?.completed);
 watch(completed, () => {
   emits("emitCompleted", item, completed);
 });
@@ -24,12 +23,16 @@ watch(completed, () => {
         v-model="completed"
         id="taskItem.id"
       />
-      <label class="form-check-label ms-3" for="taskItem.id">
-        {{ props.taskItem.id + " - " + props.taskItem.todo }}
+      <label
+        class="form-check-label ms-3"
+        for="taskItem.id"
+        v-bind:style="[completed ? { 'text-decoration': 'line-through' } : {}]"
+      >
+        {{ props.taskItem?.id + " - " + props.taskItem?.todo }}
       </label>
       <button
         class="ms-auto btn btn-danger"
-        @click="$emit('emitDeleted', taskItem.id)"
+        @click="$emit('emitDeleted', taskItem?.id)"
       >
         Delete
       </button>
