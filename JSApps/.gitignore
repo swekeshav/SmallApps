@@ -398,3 +398,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 Todo.API/sqlite.db
+Todo.API/sqlite.db-shm
+Todo.API/sqlite.db-wal
+
